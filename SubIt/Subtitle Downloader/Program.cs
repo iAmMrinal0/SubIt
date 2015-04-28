@@ -44,7 +44,7 @@ namespace Subtitle_Downloader
             string path = args[0].ToString(); //path sent in arguments from cmd line
 
             string[] extensions = new string[] { ".avi", ".mpeg", ".m4v", ".mkv", ".mp4", ".mpg", ".mov", ".rm", ".vob", ".flv", ".3gp" }; //video file extension support
-            
+
             string rem_exten = null;
             int count = 0;
 
@@ -68,22 +68,29 @@ namespace Subtitle_Downloader
                     client.Headers.Add("user-agent", "SubDB/1.0 (SubIt/0.5; http://github.com)"); //required header where subdb/1.0 needs to be intact
                     string URL = "http://api.thesubdb.com/?action=download&language=en&hash=" + final_hash; //URL with hash and language of subtitle required
 
-
-                    Stream stream = client.OpenRead(URL);
-
-                    StreamReader read_stream = new StreamReader(stream); //response stream
-
-
-                    FileStream fs = File.Create(rem_exten + ".en.srt"); //create new file with same file name with appended extension where ".en" is for "English"
-                    string line = "";
-
-                    using(StreamWriter write_stream = new StreamWriter(fs)) //write stream
+                    try
                     {
+                        Stream stream = client.OpenRead(URL);
 
-                        while((line = read_stream.ReadLine()) != null)
+                        StreamReader read_stream = new StreamReader(stream); //response stream
+
+
+                        FileStream fs = File.Create(rem_exten + ".en.srt"); //create new file with same file name with appended extension where ".en" is for "English"
+                        string line = "";
+
+                        using(StreamWriter write_stream = new StreamWriter(fs)) //write stream
                         {
-                            write_stream.WriteLine(line);
+
+                            while((line = read_stream.ReadLine()) != null)
+                            {
+                                write_stream.WriteLine(line);
+                            }
                         }
+                    }
+                    catch(Exception e)
+                    {
+                        Console.WriteLine("Subtitle not found.");
+                        Console.Read();
                     }
                 }
             }
