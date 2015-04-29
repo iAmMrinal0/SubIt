@@ -7,8 +7,8 @@
     <ProjectGuid>{0CCEA9CD-A163-407B-8DFB-4F62D604DE3C}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Subtitle_Downloader</RootNamespace>
-    <AssemblyName>Subtitle Downloader</AssemblyName>
+    <RootNamespace>SubIt</RootNamespace>
+    <AssemblyName>SubIt</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>

@@ -1,5 +1,0 @@
-C:\Users\geekrule\Documents\GitHub\SubIt\SubIt\Subtitle Downloader\bin\Release\Subtitle Downloader.exe.config
-C:\Users\geekrule\Documents\GitHub\SubIt\SubIt\Subtitle Downloader\bin\Release\Subtitle Downloader.exe
-C:\Users\geekrule\Documents\GitHub\SubIt\SubIt\Subtitle Downloader\bin\Release\Subtitle Downloader.pdb
-C:\Users\geekrule\Documents\GitHub\SubIt\SubIt\Subtitle Downloader\obj\Release\Subtitle Downloader.exe
-C:\Users\geekrule\Documents\GitHub\SubIt\SubIt\Subtitle Downloader\obj\Release\Subtitle Downloader.pdb

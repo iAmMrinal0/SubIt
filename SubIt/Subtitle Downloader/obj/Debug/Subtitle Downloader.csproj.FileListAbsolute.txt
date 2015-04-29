@@ -1,6 +1,0 @@
-C:\Users\geekrule\documents\visual studio 2013\Projects\Subtitle Downloader\Subtitle Downloader\bin\Debug\Subtitle Downloader.exe.config
-C:\Users\geekrule\documents\visual studio 2013\Projects\Subtitle Downloader\Subtitle Downloader\bin\Debug\Subtitle Downloader.exe
-C:\Users\geekrule\documents\visual studio 2013\Projects\Subtitle Downloader\Subtitle Downloader\bin\Debug\Subtitle Downloader.pdb
-C:\Users\geekrule\documents\visual studio 2013\Projects\Subtitle Downloader\Subtitle Downloader\obj\Debug\Subtitle Downloader.exe
-C:\Users\geekrule\documents\visual studio 2013\Projects\Subtitle Downloader\Subtitle Downloader\obj\Debug\Subtitle Downloader.pdb
-C:\Users\geekrule\documents\visual studio 2013\Projects\Subtitle Downloader\Subtitle Downloader\obj\Debug\Subtitle Downloader.csprojResolveAssemblyReference.cache

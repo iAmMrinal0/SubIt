@@ -59,39 +59,47 @@ namespace Subtitle_Downloader
                 }
             }
 
-            if(count == 1)
+            if(count == 1 && !File.Exists(rem_exten + ".en.srt") && !File.Exists(rem_exten + ".srt"))
             {
                 string final_hash = hash_compute(path); //compute hash function
 
-                using(var client = new WebClient())
+                if(!final_hash.Equals("err"))
                 {
-                    client.Headers.Add("user-agent", "SubDB/1.0 (SubIt/0.5; http://github.com)"); //required header where subdb/1.0 needs to be intact
-                    string URL = "http://api.thesubdb.com/?action=download&language=en&hash=" + final_hash; //URL with hash and language of subtitle required
-
-                    try
+                    using(var client = new WebClient())
                     {
-                        Stream stream = client.OpenRead(URL);
+                        client.Headers.Add("user-agent", "SubDB/1.0 (SubIt/0.6; https://github.com/iAmMrinal0/SubIt)"); //required header where subdb/1.0 needs to be intact
+                        string URL = "http://api.thesubdb.com/?action=download&language=en&hash=" + final_hash; //URL with hash and language of subtitle required
 
-                        StreamReader read_stream = new StreamReader(stream); //response stream
-
-
-                        FileStream fs = File.Create(rem_exten + ".en.srt"); //create new file with same file name with appended extension where ".en" is for "English"
-                        string line = "";
-
-                        using(StreamWriter write_stream = new StreamWriter(fs)) //write stream
+                        try
                         {
+                            Stream stream = client.OpenRead(URL);
 
-                            while((line = read_stream.ReadLine()) != null)
+                            StreamReader read_stream = new StreamReader(stream); //response stream
+
+
+                            FileStream fs = File.Create(rem_exten + ".en.srt"); //create new file with same file name with appended extension where ".en" is for "English"
+                            string line = "";
+
+                            using(StreamWriter write_stream = new StreamWriter(fs)) //write stream
                             {
-                                write_stream.WriteLine(line);
+
+                                while((line = read_stream.ReadLine()) != null)
+                                {
+                                    write_stream.WriteLine(line);
+                                }
                             }
                         }
+                        catch(Exception e)
+                        {
+                            Console.WriteLine("Subtitle not found.");
+                            Console.Read();
+                        }
                     }
-                    catch(Exception e)
-                    {
-                        Console.WriteLine("Subtitle not found.");
-                        Console.Read();
-                    }
+                }
+                else
+                {
+                    Console.WriteLine("Some program is accessing the file. Please close that program and try again.");
+                    Console.ReadLine();
                 }
             }
         }
@@ -99,34 +107,41 @@ namespace Subtitle_Downloader
 
         static string hash_compute(string file_path) //compute MD5 hash of first and last 64kb of the video file
         {
-            using(BinaryReader b = new BinaryReader(File.Open(file_path, FileMode.Open)))
+            try
             {
-
-                int required = 64 * 1024;
-
-
-                b.BaseStream.Seek(0, SeekOrigin.Begin);
-
-                byte[] by = b.ReadBytes(required);
-
-                b.BaseStream.Seek(-required, SeekOrigin.End);
-
-                byte[] bye = b.ReadBytes(required);
-
-                byte[] final = new byte[by.Length + bye.Length];
-
-                by.CopyTo(final, 0);
-                Array.Copy(bye, 0, final, by.Length, bye.Length);
-
-                MD5CryptoServiceProvider a = new MD5CryptoServiceProvider();
-                byte[] result = a.ComputeHash(final);
-
-                StringBuilder sb = new StringBuilder();
-                for(int i = 0; i < result.Length; i++)
+                using(BinaryReader b = new BinaryReader(File.Open(file_path, FileMode.Open)))
                 {
-                    sb.Append(result[i].ToString("X2"));
+
+                    int required = 64 * 1024;
+
+
+                    b.BaseStream.Seek(0, SeekOrigin.Begin);
+
+                    byte[] by = b.ReadBytes(required);
+
+                    b.BaseStream.Seek(-required, SeekOrigin.End);
+
+                    byte[] bye = b.ReadBytes(required);
+
+                    byte[] final = new byte[by.Length + bye.Length];
+
+                    by.CopyTo(final, 0);
+                    Array.Copy(bye, 0, final, by.Length, bye.Length);
+
+                    MD5CryptoServiceProvider a = new MD5CryptoServiceProvider();
+                    byte[] result = a.ComputeHash(final);
+
+                    StringBuilder sb = new StringBuilder();
+                    for(int i = 0; i < result.Length; i++)
+                    {
+                        sb.Append(result[i].ToString("X2"));
+                    }
+                    return sb.ToString();
                 }
-                return sb.ToString();
+            }
+            catch(Exception e)
+            {
+                return "err";
             }
         }
     }
