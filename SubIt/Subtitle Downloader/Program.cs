@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.IO;
 using System.Security.Cryptography;
 using System.Net;
-using System.Net.Mime;
+using System.Collections;
 
 namespace Subtitle_Downloader
 {
@@ -36,74 +34,43 @@ namespace Subtitle_Downloader
             HtmlDocument doc = new HtmlDocument();
             doc.LoadHtml("http://addic7ed.com/serie/");*/
 
-            //string path = "E:/TV Shows/The Flash 2014/Season 1/The.Flash.2014.S01E02.WEB-DL.x264.AAC.mp4"; //test case
 
-
-
-
-            string path = args[0].ToString(); //path sent in arguments from cmd line
-
-            string[] extensions = new string[] { ".avi", ".mpeg", ".m4v", ".mkv", ".mp4", ".mpg", ".mov", ".rm", ".vob", ".flv", ".3gp" }; //video file extension support
-
-            string rem_exten = null;
-            int count = 0;
-
-            //remove extensions and exit program if not a video file
-            for(int i = 0; i < extensions.Length; i++)
+            /* test cases */
+            //string path = "E:/test/The.Flash.(2014).S01E17.SDTV.mp4";
+            //string path = "E:/test/";
+            //string path = "E:/test/avi.mkv.welcome.pdf";
+            //string path = args[0].ToString(); //path sent in arguments from cmd line
+            //string path = null;
+            
+            
+            if(null_empty(args) && !File.Exists(Environment.GetFolderPath(Environment.SpecialFolder.SendTo) + "/SubIt.bat"))
             {
-                if(path.EndsWith(extensions[i]))
-                {
-                    rem_exten = path.Replace(extensions[i], "");
-                    count = 1;
-                    break;
-                }
+                create_file();
+                Environment.Exit(1);
             }
 
-            if(count == 1 && !File.Exists(rem_exten + ".en.srt") && !File.Exists(rem_exten + ".srt"))
+            else if(!null_empty(args))
             {
-                string final_hash = hash_compute(path); //compute hash function
+                string path = args[0].ToString();
 
-                if(!final_hash.Equals("err"))
+                if(Directory.Exists(path))
                 {
-                    using(var client = new WebClient())
+                    /* if the input is the media folder */
+                    string extensions = "*.avi;*.mpeg;*.m4v;*.mkv;*.mp4;*.mpg;*.mov;*.rm;*.vob;*.flv;*.3gp";//media extension files to be scanned
+
+                    ArrayList files_returned = get_files(path, extensions); //search for media files
+
+                    for(int i = 0; i < files_returned.Count; i++)
                     {
-                        client.Headers.Add("user-agent", "SubDB/1.0 (SubIt/0.6; https://github.com/iAmMrinal0/SubIt)"); //required header where subdb/1.0 needs to be intact
-                        string URL = "http://api.thesubdb.com/?action=download&language=en&hash=" + final_hash; //URL with hash and language of subtitle required
-
-                        try
-                        {
-                            Stream stream = client.OpenRead(URL);
-
-                            StreamReader read_stream = new StreamReader(stream); //response stream
-
-
-                            FileStream fs = File.Create(rem_exten + ".en.srt"); //create new file with same file name with appended extension where ".en" is for "English"
-                            string line = "";
-
-                            using(StreamWriter write_stream = new StreamWriter(fs)) //write stream
-                            {
-
-                                while((line = read_stream.ReadLine()) != null)
-                                {
-                                    write_stream.WriteLine(line);
-                                }
-                            }
-                        }
-                        catch(Exception e)
-                        {
-                            Console.WriteLine("Subtitle not found.");
-                            Console.Read();
-                        }
+                        sub_return(path + "/" + files_returned[i].ToString());
                     }
                 }
                 else
                 {
-                    Console.WriteLine("Some program is accessing the file. Please close that program and try again.");
-                    Console.ReadLine();
+                    sub_return(path); // if input is only 1 video file.
                 }
             }
         }
-
 
         static string hash_compute(string file_path) //compute MD5 hash of first and last 64kb of the video file
         {
@@ -141,8 +108,108 @@ namespace Subtitle_Downloader
             }
             catch(Exception e)
             {
+                Console.WriteLine(e.Message + "\n" + e.TargetSite);
                 return "err";
             }
+        }
+
+
+        static void sub_return(string file_path)
+        {
+            string[] extensions = new string[] { ".avi", ".mpeg", ".m4v", ".mkv", ".mp4", ".mpg", ".mov", ".rm", ".vob", ".flv", ".3gp" }; //video file extension support
+            int count = 0;
+            string rem_exten = null;
+
+            for(int i = 0; i < extensions.Length; i++)
+            {
+                if(file_path.EndsWith(extensions[i]))
+                {
+                    rem_exten = file_path.Replace(extensions[i], "");
+                    count = 1;
+                    break;
+                }
+            }
+
+
+            if(count == 1 && !File.Exists(rem_exten + ".en.srt") && !File.Exists(rem_exten + ".srt"))
+            {
+                string final_hash = hash_compute(file_path); //compute hash function
+
+                if(!final_hash.Equals("err"))
+                {
+                    using(var client = new WebClient())
+                    {
+                        client.Headers.Add("user-agent", "SubDB/1.0 (SubIt/0.9; https://github.com/iAmMrinal0/SubIt)"); //required header where subdb/1.0 needs to be intact
+                        string URL = "http://api.thesubdb.com/?action=download&language=en&hash=" + final_hash; //URL with hash and language of subtitle required
+
+                        try
+                        {
+                            Stream stream = client.OpenRead(URL);
+
+                            StreamReader read_stream = new StreamReader(stream); //response stream
+
+                            FileStream fs = File.Create(rem_exten + ".en.srt"); //create new file with same file name with appended extension where ".en" is for "English"
+                            string line = "";
+
+                            using(StreamWriter write_stream = new StreamWriter(fs)) //write stream
+                            {
+                                while((line = read_stream.ReadLine()) != null)
+                                {
+                                    write_stream.WriteLine(line);
+                                }
+                            }
+                        }
+                        catch(Exception e)
+                        {
+                            Console.WriteLine("Subtitle not found.");
+                        }
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Some program is accessing the file. Please close that program and try again.");
+                    Console.ReadLine();
+                }
+
+            }
+        }
+
+        static ArrayList get_files(string folder, string search)
+        {
+            string[] extensions = search.Split(new char[] { ';' });
+
+
+            ArrayList files = new ArrayList();
+            DirectoryInfo file_det = new DirectoryInfo(folder);
+
+            foreach(string ext in extensions)
+            {
+                files.AddRange(file_det.GetFiles(ext));
+            }
+
+            return files;
+        }
+
+        static void create_file()
+        {
+            FileStream fs = File.Create(Environment.GetFolderPath(Environment.SpecialFolder.SendTo) + "/SubIt.bat");
+
+            using(StreamWriter write_stream = new StreamWriter(fs)) //write stream
+            {
+                write_stream.WriteLine("@echo off");
+                write_stream.WriteLine("cls");
+                write_stream.WriteLine(":top");
+                write_stream.WriteLine("IF %1==\"\" GOTO start");
+                write_stream.WriteLine("  C:\\SubIt.exe %1");
+                write_stream.WriteLine("  SHIFT");
+                write_stream.WriteLine("  GOTO top");
+                write_stream.WriteLine(":start");
+            }
+        }
+
+        static bool null_empty(string[] myStringArray)
+        {
+            return myStringArray == null || myStringArray.Length < 1;
         }
     }
 }
