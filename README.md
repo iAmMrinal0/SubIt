@@ -3,7 +3,7 @@ A simple tool written in C# to download English subtitles for Movies and TV Show
 
 Before using the tool you just need to download one file. Follow the steps:
 
-  1. Download 'SubIt.exe' file from [this link](https://sdload.herokuapp.com/subit/subit.exe) .
+  1. Download 'SubIt.exe' file from [this link](https://sdload.herokuapp.com/SubIt/SubIt.exe) .
   2. Copy 'SubIt.exe' to "C:/" drive.
   3. Run it the first time so it initializes the batch file.
   
