@@ -10,3 +10,6 @@ Before using the tool you just need to download one file. Follow the steps:
 Now that the setup is done, you are good to go:
   1. Select any video file or a folder containing video files and Right Click and select 'Send To.'
   2. Click 'SubIt' and your subtitle will be downloaded to the same file location.
+
+### License
+ See the [LICENSE](LICENSE.md) file for license rights and limitations (MIT)
